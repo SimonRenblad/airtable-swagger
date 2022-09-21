@@ -190,7 +190,6 @@ function generateSwaggerObject(schema) {
         const urlSafeName = table.name.replace(/[;/?:@=&" <>#%{}|\\^~[\]`]+/g, '');
 
         swaggerSchemas[`Read${urlSafeName}Fields`] = allFieldsSchema;
-        swaggerSchemas[`Write${urlSafeName}Fields`] = editableFieldsSchema;
         swaggerSchemas[`Read${urlSafeName}`] = {
             properties: {
                 id: {type: 'string'},
@@ -203,22 +202,12 @@ function generateSwaggerObject(schema) {
                 fields: {'$ref': `#/components/schemas/Read${urlSafeName}Fields`}
             }
         };
-        swaggerSchemas[`Write${urlSafeName}RequestBody`] = {
-            properties: {
-                fields: {'$ref': `#/components/schemas/Write${urlSafeName}Fields`}
-            }
-        };
 
 
         // List, Create
         swaggerPaths[`/${table.name}`] = {
             'get': {
                 operationId: `list${urlSafeName}`,
-                security: [
-                    {
-                        BearerAuth: []
-                    }
-                ],
                 parameters: [
                     {
                         name: 'api_key',
@@ -316,36 +305,6 @@ function generateSwaggerObject(schema) {
                         }
                     }
                 }
-            },
-            'post': {
-                operationId: `create${urlSafeName}`,
-                security: [
-                    {
-                        BearerAuth: []
-                    }
-                ],
-                requestBody: {
-                    required: true,
-                    content: {
-                        'application/json': {
-                            schema: {
-                                '$ref': `#/components/schemas/Write${urlSafeName}RequestBody`
-                            }
-                        }
-                    }
-                },
-                responses: {
-                    '200': {
-                        description: 'Create Object Response',
-                        content: {
-                            'application/json': {
-                                schema: {
-                                    '$ref': `#/components/schemas/Read${urlSafeName}`
-                                }
-                            }
-                        }
-                    }
-                }
             }
         };
 
@@ -353,12 +312,15 @@ function generateSwaggerObject(schema) {
         swaggerPaths[`/${table.name}/{id}`] = {
             'get': {
                 operationId: `retrieve${urlSafeName}`,
-                security: [
-                    {
-                        BearerAuth: []
-                    }
-                ],
                 parameters: [
+                    {
+                        name: 'api_key',
+                        in: 'query',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        }
+                    },
                     {
                         name: 'id',
                         in: 'path',
@@ -375,76 +337,6 @@ function generateSwaggerObject(schema) {
                             'application/json': {
                                 schema: {
                                     '$ref': `#/components/schemas/Read${urlSafeName}`
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            'patch': {
-                operationId: `update${urlSafeName}`,
-                security: [
-                    {
-                        BearerAuth: []
-                    }
-                ],
-                parameters: [
-                    {
-                        name: 'id',
-                        in: 'path',
-                        required: true,
-                        schema: {
-                            type: 'string'
-                        }
-                    }
-                ],
-                requestBody: {
-                    required: true,
-                    content: {
-                        'application/json': {
-                            schema: {
-                                '$ref': `#/components/schemas/Read${urlSafeName}RequestBody`
-                            }
-                        }
-                    }
-                },
-                responses: {
-                    '200': {
-                        description: 'Update Object Response',
-                        content: {
-                            'application/json': {
-                                schema: {
-                                    '$ref': `#/components/schemas/Read${urlSafeName}`
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            'delete': {
-                operationId: `delete${urlSafeName}`,
-                security: [
-                    {
-                        BearerAuth: []
-                    }
-                ],
-                parameters: [
-                    {
-                        name: 'id',
-                        in: 'path',
-                        required: true,
-                        schema: {
-                            type: 'string'
-                        }
-                    }
-                ],
-                responses: {
-                    '200': {
-                        description: 'Delete Object Response',
-                        content: {
-                            'application/json': {
-                                schema: {
-                                    '$ref': '#/components/schemas/AirtableDeleted'
                                 }
                             }
                         }
@@ -467,12 +359,6 @@ function generateSwaggerObject(schema) {
         ],
         components: {
             schemas: swaggerSchemas,
-            securitySchemes: {
-                BearerAuth: {
-                    type: 'http',
-                    scheme: 'bearer'
-                }
-            }
         },
         paths: swaggerPaths
     }
