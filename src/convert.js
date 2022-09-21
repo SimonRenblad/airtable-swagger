@@ -221,6 +221,14 @@ function generateSwaggerObject(schema) {
                 ],
                 parameters: [
                     {
+                        name: 'api_key',
+                        in: 'query',
+                        required: true,
+                        schema: {
+                            type: 'string',
+                        }
+                    },
+                    {
                         name: 'fields',
                         in: 'query',
                         required: false,
