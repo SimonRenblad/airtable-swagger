@@ -6,17 +6,11 @@ Generate OAS 3.0 API definition from Airtable schema object
 Background
 ---
 
+This is a fork of briankinney/airtable-swagger.
+
 Every Airtable base has an auto-generated documentation page that is largely driven by an object that describes the
 schema of the base. This utility will convert the schema object into an OAS 3.0 (swagger) document so you can take
 advantage of tools that make use of this API definition format.
-
-
-Firefox Addon
----
-
-### Setup
-
-[Download link](https://addons.mozilla.org/en-US/firefox/addon/airtable-swagger-generator/)
 
 ### Usage
 
